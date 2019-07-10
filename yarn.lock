@@ -4869,6 +4869,11 @@ react-is@^16.8.1, react-is@^16.8.3, react-is@^16.8.4:
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.8.6.tgz#5bbc1e2d29141c9fbdfed456343fe2bc430a6a16"
   integrity sha512-aUk3bHfZ2bRSVFFbbeVS4i+lNPZr3/WM5jT2J5omUVV1zzcs1nAaf3l51ctA5FFvCRbhrH0bdAsRRQddFJZPtA==
 
+react-native-fingerprint-scanner@^2.6.1:
+  version "2.6.1"
+  resolved "https://registry.yarnpkg.com/react-native-fingerprint-scanner/-/react-native-fingerprint-scanner-2.6.1.tgz#ebc931ca1a79925076fe625d14842451aaf6791e"
+  integrity sha512-S3MohzwNqtsikDfIn5X1ji9tSpfJ/JHFG/ecXr9uZ6dgO+qvFexPx07+doGKwSi8tg/zg2HhTL62FCh8FTpOFQ==
+
 react-native@0.59.9:
   version "0.59.9"
   resolved "https://registry.yarnpkg.com/react-native/-/react-native-0.59.9.tgz#c94ee4fa35121720c05235a2dd6cdd2784bf5177"
