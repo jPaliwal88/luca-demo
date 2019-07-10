@@ -9,6 +9,7 @@
   "dependencies": {
     "react": "16.8.3",
     "react-native": "0.59.9",
+    "react-native-contacts-wrapper": "^0.2.4",
     "react-native-fingerprint-scanner": "^2.6.1"
   },
   "devDependencies": {

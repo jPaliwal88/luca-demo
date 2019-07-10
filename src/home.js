@@ -18,9 +18,13 @@ import {
 	Text,
 	StatusBar,
 	Image,
-	Dimensions
+	Dimensions,
+	PermissionsAndroid,
+	Platform
 } from 'react-native';
 import FingerprintPopup from './scanner/index';
+import ContactPicker from './contactPicker';
+import ContactsWrapper from 'react-native-contacts-wrapper';
 
 const width = Dimensions.get('window').width;
 const height = Dimensions.get('window').height;
@@ -30,6 +34,7 @@ const height = Dimensions.get('window').height;
 class Home extends React.Component {
 	state = {
 		amount: 0,
+		contact: {},
 	}
 
 	setAmount = (amount) => {
@@ -37,15 +42,83 @@ class Home extends React.Component {
 		let newAmount = "";
 		const oldAmount = this.state.amount;
 		if(amount != '<'){
-			newAmount =  `${this.state.amount}${amount}`;
+			if(oldAmount == 0){
+				if(amount == '.'){
+					newAmount = `0.`;
+				}else if(oldAmount && (oldAmount.indexOf('.') !== -1)){
+					newAmount = `${oldAmount}${amount}`;
+				}
+				else{
+					newAmount = `${amount}`;
+				}
+			}else{
+				newAmount =  `${oldAmount}${amount}`;
+			}
+				
 		}else{
-			
-			newAmount =  oldAmount ? oldAmount.slice(0, -1) : 0;
+			newAmount =  Number(oldAmount) ? oldAmount.slice(0, -1) : 0;
+			if(!newAmount){
+				newAmount = 0
+			}
 		}
 		this.setState({amount: newAmount})
 	}
 
+	openContactPicker = () => {
+        ContactsWrapper.getContact()
+        .then((contact) => {
+			this.setState({contact})
+            console.log(contact);
+        })
+        .catch((error) => {
+            console.log("ERROR CODE: ", error.code);
+            console.log("ERROR MESSAGE: ", error.message);
+        });
+	}
+	
+	onPay = () => {
+		const { amount, contact = {} } = this.state;
+		alert(`You sent $${amount} to ${contact.name}`)
+	}
+
+
+	requestContactPermission = async () => {
+		if(Platform.OS == 'ios'){
+			this.openContactPicker();
+			return;
+		}
+		try {
+		  const granted = await PermissionsAndroid.request(
+			PermissionsAndroid.PERMISSIONS.READ_CONTACTS,
+		  );
+		  if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+			this.openContactPicker();
+			console.log('You can use the contact');
+		  } else {
+			  alert("Contact Permission denied")
+			console.log('Camera permission denied');
+		  }
+		} catch (err) {
+		  console.warn(err);
+		}
+	  }
+
+	  
+
 	render(){
+		const { contact, amount } = this.state;
+		let integer = amount, decimal;
+		if(amount){
+			const amountArr = amount.split('.');
+			integer = amountArr[0];
+			decimal = amountArr[1];
+
+			if((amount.indexOf('.') != -1) && !decimal){
+				integer = integer+'.'
+			}
+			
+			console.log('contactamount', amount, amount.split('.'))
+		}
 		return (
 			<Fragment>
 				<StatusBar backgroundColor={primaryColor} barStyle="light-content" />
@@ -55,14 +128,14 @@ class Home extends React.Component {
 						<View style={styles.inputCont}>
 							<View style={styles.amountCont}>
 								<Text style={styles.dollarSign}>$</Text>
-								<Text style={styles.largeAmount}>{this.state.amount}</Text>
-								{/* <Text style={[styles.dollarSign]}>44</Text> */}
+								<Text style={styles.largeAmount}>{integer}</Text>
+								<Text style={[styles.dollarSign]}>{decimal}</Text>
 							</View>
 							<View style={styles.contactSelect}>
-								<TouchableOpacity>
+								<TouchableOpacity onPress={this.requestContactPermission}>
 									<Image source={require('../assets/images/plus.png')} style={{height: 30, width: 30, marginRight: 10}}/>
 								</TouchableOpacity>
-								<Text style={styles.contactTxt}>No Contact Selected</Text>
+								 <Text style={styles.contactTxt}>{contact.name ? contact.name : 'No Contact Selected'}</Text>
 							</View>
 						</View>
 						<View style={styles.keyboardCont}>
@@ -73,7 +146,7 @@ class Home extends React.Component {
 									</TouchableOpacity>
 								))}
 							</View>
-							<TouchableOpacity activeOpacity={0.8} style={styles.payBtn}>
+							<TouchableOpacity disabled={!amount || !contact.name} onPress={this.onPay} activeOpacity={0.8} style={styles.payBtn}>
 								<Text style={styles.payTxt}>Pay</Text>
 							</TouchableOpacity>
 						</View>
@@ -118,7 +191,8 @@ const styles = StyleSheet.create({
 	},
 
 	contactTxt: {
-		color: secondryColor
+		color: secondryColor,
+		fontSize: 18
 	},
 	
 	largeAmount: {
@@ -127,14 +201,12 @@ const styles = StyleSheet.create({
 	},
 
 	smallAmount: {
-		// marginTop: 5
+
 	},
 
 	keyboardCont: {
 		height: '55%',
 		justifyContent: 'space-between',
-		// paddingTop: 40,
-		// backgroundColor: 'blue'
 	},
 
 	numberCont: {
@@ -150,12 +222,14 @@ const styles = StyleSheet.create({
 		width: width/3,
 		alignItems: 'center',
 		justifyContent: 'center',
+		alignSelf: 'center',
 		height: '22%',
 	},
 
 	numberTxt: {
 		color: secondryColor,
-		fontSize: 22
+		fontSize: 22,
+		backgroundColor: 'red',
 	},
 
 	payBtn: {

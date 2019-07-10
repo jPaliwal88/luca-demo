@@ -53,7 +53,7 @@ class FingerprintPopup extends Component {
             onRequestClose={() => this.setState({modalVisible: false})}>
             <TouchableOpacity 
                 activeOpacity={1} 
-                onPress={() => this.setState({modalVisible: false})} 
+                // onPress={() => this.setState({modalVisible: false})} 
                 style={styles.modal}
             >
                 <TouchableOpacity 
