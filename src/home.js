@@ -20,6 +20,7 @@ import {
 	Image,
 	Dimensions
 } from 'react-native';
+import FingerprintPopup from './scanner/index';
 
 const width = Dimensions.get('window').width;
 const height = Dimensions.get('window').height;
@@ -49,6 +50,7 @@ class Home extends React.Component {
 			<Fragment>
 				<StatusBar backgroundColor={primaryColor} barStyle="light-content" />
 				<View style={styles.container}>
+					<FingerprintPopup/>
 					<SafeAreaView style={styles.safeArea}>
 						<View style={styles.inputCont}>
 							<View style={styles.amountCont}>
